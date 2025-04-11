@@ -1,6 +1,6 @@
 /******************************************************************
  *
- *   YOUR NAME / SECTION NUMBER
+ *   Nicole Kozuch / Section 002
  *
  *   This java file contains the problem solutions for the methods selectionSort,
  *   mergeSortDivisibleByKFirst, asteroidsDestroyed, and numRescueCanoes methods.
@@ -32,16 +32,30 @@ public class ProblemSolutions {
         selectionSort(values, true);
     }
 
-    public static void selectionSort(int[] values, boolean ascending ) {
+    public static void selectionSort(int[] values, boolean ascending) {
 
         int n = values.length;
-
         for (int i = 0; i < n - 1; i++) {
-
-            // YOU CODE GOES HERE -- COMPLETE THE INNER LOOP OF THIS
-            // "SELECTION SORT" ALGORITHM.
-            // DO NOT FORGET TO ADD YOUR NAME / SECTION ABOVE
-
+            int val = i;
+            for (int j = i + 1; j < n; j++) {
+                // Perform sort depending on whether ascending or descending
+                if (ascending) {
+                    // Gets the minimum value 
+                    if (values[val] > values[j]) {
+                        val = j;
+                    }
+                } else {
+                    // Gets the maximum value
+                    if (values[val] < values[j]) {
+                        val = j;
+                    }
+                }
+            }
+            
+            // Swap current value with value at specified index
+            int temp = values[i];
+            values[i] = values[val];
+            values[val] = temp;
         }
 
     } // End class selectionSort
@@ -90,20 +104,53 @@ public class ProblemSolutions {
      * The merging portion of the merge sort, divisible by k first
      */
 
-    private void mergeDivisbleByKFirst(int arr[], int k, int left, int mid, int right)
-    {
-        // YOUR CODE GOES HERE, THIS METHOD IS NO MORE THAN THE STANDARD MERGE PORTION
-        // OF A MERGESORT, EXCEPT THE NUMBERS DIVISIBLE BY K MUST GO FIRST WITHIN THE
-        // SEQUENCE PER THE DISCUSSION IN THE PROLOGUE ABOVE.
-        //
-        // NOTE: YOU CAN PROGRAM THIS WITH A SPACE COMPLEXITY OF O(1) OR O(N LOG N).
-        // AGAIN, THIS IS REFERRING TO SPACE COMPLEXITY. O(1) IS IN-PLACE, O(N LOG N)
-        // ALLOCATES AUXILIARY DATA STRUCTURES (TEMPORARY ARRAYS). IT WILL BE EASIER
-        // TO CODE WITH A SPACE COMPLEXITY OF O(N LOG N), WHICH IS FINE FOR PURPOSES
-        // OF THIS PROGRAMMING EXERCISES.
+    private void mergeDivisbleByKFirst(int arr[], int k, int left, int mid, int right) {
+        
+        int leftSize = mid - left + 1;
+        int rightSize = right - mid;
 
-        return;
+        // Create temporary subarrays to hold sorted elements
+        int leftArr[] = new int[leftSize];
+        int rightArr[] = new int[rightSize];
 
+        // Populate temporary arrays with arr[] data
+        for (int i = 0; i < leftSize; i++) {
+            leftArr[i] = arr[left + i];
+        }
+
+        for (int i = 0; i < rightSize; i++) {
+            rightArr[i] = arr[mid + 1 + i];
+        }
+
+        // Initialize pointers to track merging
+        int i = 0, j = 0, n = left;
+
+        while (i < leftSize && j < rightSize) {
+            // Check for elements divisible by k in either array first
+            if (leftArr[i] % k == 0) {
+                arr[n++] = leftArr[i++];
+            } else if (rightArr[j] % k == 0) {
+                arr[n++] = rightArr[j++];
+            } 
+            // Continue regular mergesort for elements not divisible by k
+            else {
+                if (leftArr[i] <= rightArr[j]) {
+                    arr[n++] = leftArr[i++];
+                } else {
+                    arr[n++] = rightArr[j++];
+                }
+            }
+        }
+
+        // Add any remaining elements from left subarray
+        while (i < leftSize) {
+            arr[n++] = leftArr[i++];
+        }
+        
+        // Add any remaining elements from right subarray
+        while (j < rightSize) {
+            arr[n++] = rightArr[j++];
+        }
     }
 
 
@@ -153,10 +200,20 @@ public class ProblemSolutions {
      */
 
     public static boolean asteroidsDestroyed(int mass, int[] asteroids) {
+        
+        // Sort asteroids by lighest to heaviest mass
+        Arrays.sort(asteroids);
+        for (int asteroid : asteroids) {
+            // Planet's mass not big enough to destroy asteroid
+            if (mass < asteroid) {
+                return false;
+            }
+            // Update mass of planet after collision
+            mass += asteroid;
+        }
 
-        // YOUR CODE GOES HERE, CONSIDER USING ARRAYS.SORT()
-
-        return false;
+        // All asteroids have been destroyed
+        return true;
 
     }
 
@@ -192,9 +249,27 @@ public class ProblemSolutions {
 
     public static int numRescueSleds(int[] people, int limit) {
 
-        // YOUR CODE GOES HERE, CONSIDER USING ARRAYS.SORT
+        Arrays.sort(people);
+        int sleds = 0;
 
-        return -1;
+        // Initialize pointers to track possible pairings
+        int lightest = 0;
+        int heaviest = people.length - 1;
+
+        while (lightest <= heaviest) {
+            // Checks if two people can fit into one sled
+            if (people[lightest] + people[heaviest] <= limit) {
+                lightest++;
+                heaviest--;
+            } 
+            else { 
+                heaviest--;
+            }
+            // Update number of rescue sleds needed
+            sleds++;
+        }
+
+        return sleds;
 
     }
 
